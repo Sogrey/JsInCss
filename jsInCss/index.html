@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <style>
+    body {
+      background: #3d464f;
+      height: 100vh;
+      margin: 0;
+      display: flex;
+    }
+    .box{
+      margin: auto;
+      font-weight: bold;
+      font-size: 50px;
+      text-shadow: 2px 3px 1px cyan;
+      color: yellow;
+      padding: 16px;
+    }
+    
+    @property --multiplier {
+      syntax: '<number>';
+      inherits: false;
+      initial-value: 0.24;
+    }
+
+    .el {
+      --color: cyan;
+      --multiplier: 0.24;
+      --pad: 30;
+      --slant: 20;
+
+      --background-canvas: (ctx, geom)=> {
+        let multiplier=var(--multiplier);
+        let c=`var(--color)`;
+        let pad=var(--pad);
+        let slant=var(--slant);
+
+        ctx.moveTo(0, 0);
+        ctx.lineTo(pad + (geom.width - slant - pad) * multiplier, 0);
+        ctx.lineTo(pad + (geom.width - slant - pad) * multiplier + slant, geom.height);
+        ctx.lineTo(0, geom.height);
+        ctx.fillStyle=c;
+        ctx.fill();
+      };
+      background: paint(background-canvas);
+      transition: --multiplier 0.4s;
+    }
+
+    .el:hover {
+      --multiplier: 1;
+    }
+    .el span {
+       mix-blend-mode: exclusion;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="el box">
+    <span>CSS Houdini</span>
+  </div>
+  <script type="module">
+    CSS.paintWorklet.addModule('./worklet.js')
+  </script>
+</body>
+
+</html>
